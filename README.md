@@ -1,84 +1,112 @@
-# IoT Predictive Maintenance using Recurrent Neural Networks
+📡 Project Title: IoT Predictive Maintenance Demo
+🎯 Objective
 
-This is a demo that utilizes the MapR Converged Data Platform, Pyspark, TensorFlow and Python 3.5 for predicting the next time period value in a time series on data from an IoT device.  This is particularly useful for manufacturing and industry 4.0 where sensors are attached to components sending data back for real time monitoring.  This demo takes real time monitoring and enhances with it with prediction capabilities that can generate alerts when the prediction exceeds a threshold of normal behavior.
+This project demonstrates predictive maintenance using IoT sensor data and Recurrent Neural Networks (RNNs).
+It predicts future device behavior so maintenance can be performed before failures occur, reducing downtime and improving operational efficiency.
 
-If we can predict when a piece of hardware will fail accurately, and replace that component before it fails, we can achieve much higher levels of operational efficiency.
+🛠️ Tools & Technologies
 
-With many devices now including sensor data and other components that send diagnosis reports, predictive maintenance using big data becomes increasingly more accurate and effective.
+Programming Language: Python 3.5
 
-## What are we working with?
-A sensor attached to a automated manufacturing device capture position and calibration at each time stamp.  The sensor is capturing real time data on the device and the device's positioning.  The data is stored for historical analysis to identify trends and patterns to determine if any devices need to be taken out of production for health checks and maintenance.
+Frameworks & Libraries:
 
-## Data
-2,014 .dat files that, when unpackaged, were xml format
+PySpark – Distributed data processing
 
-When loaded into the sandbox, take the last 10 .dat files and move to another folder.  These will be the "real-time" data that the producer script will open and read into the MapR stream that is created and that our . 
+TensorFlow – Deep learning model development
 
-## Download the MapR Sandbox
-To get started, download the MapR Sandbox and install in Virtual Box:
-https://maprdocs.mapr.com/52/SandboxHadoop/t_install_sandbox_vbox.html
+Plotly – Interactive visualization
 
-Before you start your new "Sandbox" VM, add the following line to
-the Port Forwarding rules for the NAT network interface.  If you are
-running the gateway on a different port, please substitute your port
-number for '8082' below.  Add jupyter to this as well.   
+Requests – HTTP library for API interactions
+
+Data Platform: MapR Converged Data Platform
+
+📁 Project Structure
+IoT_Predictive_Maintenance_Demo/
+├── demo_data.zip
+├── mapr_kafka_rest.py
+├── Sensor_ETLsparksubmit.py
+├── Sensor_Historical_Data_Analysis.py
+├── Sensor_XML2MaprStreams_producer.py
+├── Stream_IoT_Prediction_Dashboard_plotly.py
+├── predictive_maintenance_gui.py
+└── README.md
+
+⚙️ Setup Instructions
+1. Clone the Repository
+git clone https://github.com/marthanjoel/IoT_Predictive_Maintenance_Demo-.git
+cd IoT_Predictive_Maintenance_Demo-
+
+2. Install Dependencies
+pip install pyspark tensorflow plotly requests
+
+3. Configure MapR Sandbox
+
+Download and install the MapR Sandbox
+ in VirtualBox.
+
+Add port forwarding for Kafka REST and Jupyter:
+
 Kafka_REST TCP 127.0.0.1 8082 8082
-
 jupyter TCP 127.0.0.1 9999 9999
 
-### Login as the ‘root’ user, install the Kafka REST Gateway
 
-Set the flush timeout for the Kafka REST gateway buffer, and then restart the Warden service:
+SSH into the sandbox and install Kafka REST:
 
-$ ssh -p 2222 root@localhost
+ssh -p 2222 root@localhost
+yum install mapr-kafka-rest
+echo 'streams.buffer.max.time.ms=100' >> /opt/mapr/kafka-rest/kafka-rest-2.0.1/config/kafka-rest.properties
+service mapr-warden restart
+exit
 
-password: mapr
+4. Create MapR Stream and Topic
+ssh -p 2222 user01@localhost
+maprcli stream create -path /user/user01/iot_stream -produceperm p -consumeperm p -topicperm p
+maprcli stream topic create -path /user/user01/iot_stream -topic sensor_record
+exit
 
-[root@maprdemo ~]# yum install mapr-kafka-rest
+5. Run the Prediction Dashboard
+python Stream_IoT_Prediction_Dashboard_plotly.py
 
-[root@maprdemo ~]# echo 'streams.buffer.max.time.ms=100' >> /opt/mapr/kafka-rest/kafka-rest-2.0.1/config/kafka-rest.properties
-
-[root@maprdemo ~]# service mapr-warden restart
-
-[root@maprdemo ~]# exit
-
-### Login as the 'user01' user, create the MapR Stream and Topic for this demo:
-
-$ ssh -p 2222 user01@localhost
-
-password: mapr
-
-[user01@maprdemo ~]$ maprcli stream create -path /user/user01/iot_stream -produceperm p -consumeperm p -topicperm p
-
-[user01@maprdemo ~]$ maprcli stream topic create -path /user/user01/iot_stream -topic sensor_record
-
-Now use scp or vi to copy the following Python files into your Sandbox VM at '/user/user01'.
-
-Install Anaconda Python:
-https://community.mapr.com/community/exchange/blog/2017/07/18/setting-up-jupyter-notebook-for-spark-210-and-python
-(note, instead of installing miniconda, replace with
-"wget https://repo.continuum.io/archive/Anaconda3-4.2.0-Linux-x86_64.sh")
-The Python files included in this demo package assume that you have installed
-Python 3.5.2 AND the "Requests HTTP Library for Python".
-
-### For the visualization:
-#### Plotly no longer has cloud supported streaming.  I will be working on another visualization application to replace Plotly. 
-
-First, go to https://plot.ly/ and set up an account.  Once you have set up an account, go to your account settings and on the left you will see a menu selection for API key.  Click that and then "Regenerate Key".   Then set up two Streaming API tokens.  Once this is completed  you need to install the plotly package in the Sandbox and then set up your credentials.  In the sandbox do the following:
-
-[user01@maprdemo ~]$ pip install plotly
-
-[user01@maprdemo ~]$ vi ~/.plotly/.credentials
-
-add in stream tokens,username and api-key.  To view your visualization, click on the My Files tab on the plotly website and then "view". 
+6. Launch the Tkinter GUI
+python predictive_maintenance_gui.py
 
 
-## Author: 
-Justin Brandenburg 
+Click Run Prediction to execute the model and visualize results.
 
-Data Scientist, MapR Data Technologies
+📊 Simulation Details
 
-## Acknowledgements: 
-Mike Aube 
+Sensor Data: Historical IoT device data in XML / .dat files
 
-Solutions Engineer - MapR Federal, MapR Data Technologies
+Prediction Logic: RNN predicts next time period values
+
+Visualization: Plotly interactive plots for real-time monitoring
+
+🖼️ Screenshots
+1 <img width="1366" height="768" alt="Screenshot from 2025-09-18 14-40-28" src="https://github.com/user-attachments/assets/eb30f0ce-669e-49be-8ab1-657285407697" />
+
+1 <img width="1346" height="654" alt="Screenshot from 2025-09-18 15-04-15" src="https://github.com/user-attachments/assets/30933d51-6d62-4153-b67f-c749bf805738"  />
+
+
+---
+
+
+📝 Observations
+
+Prediction accuracy depends on sensor data quality
+
+Visualization helps identify trends and anomalies
+
+Real-time streaming with MapR enables continuous monitoring
+
+
+---
+
+🔮 Future Improvements
+
+Integrate cloud storage for historical data
+
+Add automated alerting system for maintenance
+
+Upgrade to latest TensorFlow / Python versions
+
+Embed plots directly in GUI for real-time visualization
